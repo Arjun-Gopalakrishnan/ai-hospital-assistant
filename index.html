@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareFirst Hospital - AI Assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Navigation Bar -->
+  <header class="bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 bg-blue-600 text-white rounded-xl flex items-center justify-center font-black text-xl shadow-md shadow-blue-500/20">
+          CF
+        </div>
+        <div>
+          <span id="nav-title" class="text-xl font-bold text-slate-900 leading-none block">CareFirst Multispeciality</span>
+          <span class="text-xs text-slate-400 font-medium tracking-wide">AI Hospital Assistant</span>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-6 text-sm font-medium">
+        <a href="#doctors" id="nav-doctors" class="text-slate-600 hover:text-blue-600 transition">Doctors</a>
+        <a href="#admin-section" id="nav-admin" class="text-slate-600 hover:text-blue-600 transition">Admin Queue</a>
+        
+        <!-- Language Switcher -->
+        <button onclick="toggleLanguage()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 px-3.5 py-2 rounded-xl border border-slate-200 flex items-center gap-2 transition text-xs font-semibold">
+          <i data-lucide="globe" class="w-4 h-4 text-slate-500"></i>
+          <span id="lang-label">ENG</span>
+          <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+        </button>
+
+        <span id="nav-emergency" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-md shadow-red-500/20 flex items-center gap-1.5 transition cursor-pointer">
+          <i data-lucide="shield-alert" class="w-4 h-4"></i> Emergency: 24/7 Active
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section with Background Hospital Building -->
+  <section class="relative bg-slate-900 min-h-[560px] flex items-center overflow-hidden">
+    <!-- Background Image with Gradient Overlay -->
+    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://img.freepik.com/premium-photo/hospital-building-red-cross-medical-institution-health-treatment-disease-wallpaper-background_916211-130571.jpg?w=2000');">
+      <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/85 to-transparent"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 py-16 relative z-10 w-full grid lg:grid-cols-12 gap-12 items-center">
+      <!-- Left Column: Hero Text -->
+      <div class="lg:col-span-7 space-y-6">
+        <div class="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 text-blue-300 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide backdrop-blur-md">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+          <span id="hero-tag">AI HOSPITAL ASSISTANT PLATFORM</span>
+        </div>
+        
+        <h1 id="hero-title" class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.15] tracking-tight">
+          Smart Clinical Care with Instant <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">AI Assistance</span>
+        </h1>
+        
+        <p id="hero-desc" class="text-slate-300 text-base sm:text-lg leading-relaxed max-w-xl">
+          Check real-time OPD schedules, book appointments via voice, text, or interactive booking form, and get immediate clinical triage.
+        </p>
+
+        <div class="flex flex-wrap gap-4 pt-2">
+          <button onclick="toggleChat()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3.5 rounded-xl font-semibold shadow-lg shadow-blue-600/30 transition flex items-center gap-2.5">
+            <i data-lucide="message-square" class="w-4 h-4"></i> <span id="btn-chat">Open AI Assistant</span>
+          </button>
+          <a href="#doctors" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md px-6 py-3.5 rounded-xl font-semibold transition flex items-center gap-2">
+            <i data-lucide="calendar" class="w-4 h-4"></i> <span id="btn-book">Book Appointment</span>
+          </a>
+        </div>
+
+        <!-- Trust Badges -->
+        <div class="grid grid-cols-3 gap-4 pt-6 border-t border-white/10 text-white">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-white/10 rounded-lg backdrop-blur-md"><i data-lucide="headphones" class="w-4 h-4 text-blue-400"></i></div>
+            <div><p class="text-xs font-bold">24/7 AI Support</p><p class="text-[11px] text-slate-400">Always available</p></div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-white/10 rounded-lg backdrop-blur-md"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i></div>
+            <div><p class="text-xs font-bold">Secure & Private</p><p class="text-[11px] text-slate-400">Clinical Triage</p></div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-white/10 rounded-lg backdrop-blur-md"><i data-lucide="clock" class="w-4 h-4 text-cyan-400"></i></div>
+            <div><p class="text-xs font-bold">Instant Booking</p><p class="text-[11px] text-slate-400">Live confirmation</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Casualty Card -->
+      <div class="lg:col-span-5 flex justify-end">
+        <div class="bg-white/95 backdrop-blur-xl border border-white/40 p-7 rounded-3xl shadow-2xl w-full max-w-sm">
+          <div class="flex items-start gap-3.5 mb-5">
+            <div class="p-2.5 bg-red-50 text-red-600 rounded-2xl border border-red-100">
+              <i data-lucide="shield-alert" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h3 id="casualty-title" class="font-bold text-slate-900 text-base leading-tight">24/7 Casualty & Triage</h3>
+              <p id="casualty-desc" class="text-xs text-slate-500 mt-1">For critical care & ambulance dispatch</p>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 mb-5">
+            <span id="casualty-label" class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block mb-1">Emergency Helpline</span>
+            <div class="flex items-center gap-2 text-red-600 font-bold text-xl">
+              <i data-lucide="phone-call" class="w-5 h-5"></i>
+              <span>+91 484 2900000</span>
+            </div>
+          </div>
+
+          <a href="tel:+914842900000" class="block w-full text-center bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 py-3 rounded-xl text-xs font-bold tracking-wide transition">
+            Emergency: 24/7 Active
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Layout -->
+  <main class="max-w-7xl mx-auto px-6 py-14 flex-1 space-y-16">
+    
+    <!-- Specialist Doctors Directory -->
+    <section id="doctors">
+      <div class="flex justify-between items-end mb-8">
+        <div>
+          <h2 id="dir-title" class="text-2xl font-extrabold text-slate-900 flex items-center gap-2.5">
+            <i data-lucide="stethoscope" class="w-6 h-6 text-blue-600"></i> Specialist Doctors Directory
+          </h2>
+          <p class="text-sm text-slate-500 mt-1">Specialized clinical doctors available for consultations and scheduled OPD</p>
+        </div>
+      </div>
+
+      <div id="doctor-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+        <div class="bg-white p-6 rounded-2xl border text-center text-slate-400 col-span-full">Loading doctors directory...</div>
+      </div>
+    </section>
+
+    <!-- Live Admin Appointments Queue -->
+    <section id="admin-section" class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div>
+          <h2 id="admin-title" class="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+            <i data-lucide="calendar-days" class="w-5 h-5 text-indigo-600"></i> Live Admin Appointments Queue
+          </h2>
+          <p class="text-xs text-slate-500 mt-1">Real-time appointments confirmed via AI Assistant or Online Booking</p>
+        </div>
+        <button onclick="loadAppointments()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs px-4 py-2 rounded-xl border font-semibold flex items-center gap-2 transition">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> <span id="btn-refresh">Refresh List</span>
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-50/80 text-slate-500 text-xs uppercase font-semibold border-b">
+            <tr>
+              <th id="th-id" class="py-3.5 px-4">Booking ID</th>
+              <th id="th-name" class="py-3.5 px-4">Patient Name</th>
+              <th id="th-phone" class="py-3.5 px-4">Phone</th>
+              <th id="th-date" class="py-3.5 px-4">Date & Time</th>
+              <th id="th-status" class="py-3.5 px-4">Status</th>
+            </tr>
+          </thead>
+          <tbody id="appointment-table-body" class="divide-y divide-slate-100 text-slate-700">
+            <tr><td colspan="5" class="py-6 text-center text-slate-400">Loading appointments...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Interactive Booking Modal -->
+  <div id="booking-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-7 border border-slate-100">
+      <div class="flex justify-between items-center mb-5">
+        <h3 class="text-lg font-bold text-slate-900">Book Doctor Appointment</h3>
+        <button onclick="closeBookingModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+      <form onsubmit="handleFormBooking(event)" class="space-y-4 text-sm">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Selected Specialist</label>
+          <input id="form-doctor-name" type="text" readonly class="w-full bg-slate-50 border rounded-xl px-3.5 py-2.5 text-slate-800 font-semibold cursor-not-allowed" />
+          <input id="form-doctor-id" type="hidden" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Patient Full Name</label>
+          <input id="form-patient-name" type="text" required placeholder="e.g. Rahul S" class="w-full border rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-600 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Contact Phone</label>
+          <input id="form-patient-phone" type="tel" required placeholder="+91 9876543210" class="w-full border rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-600 focus:outline-none" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Date</label>
+            <input id="form-date" type="date" required class="w-full border rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-600 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Time Slot</label>
+            <select id="form-time" class="w-full border rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-blue-600 focus:outline-none">
+              <option>09:30 AM</option>
+              <option>10:30 AM</option>
+              <option>11:30 AM</option>
+              <option>02:30 PM</option>
+              <option>04:00 PM</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex gap-3 pt-3">
+          <button type="button" onclick="closeBookingModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-3 rounded-xl font-semibold transition">Cancel</button>
+          <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold shadow-md shadow-blue-600/20 transition">Confirm Booking</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Chat Widget Modal -->
+  <div id="chat-modal" class="fixed bottom-24 right-6 w-96 max-w-[92vw] h-[560px] bg-white rounded-3xl shadow-2xl border border-slate-100 flex flex-col hidden z-50 overflow-hidden">
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 flex justify-between items-center">
+      <div class="flex items-center gap-2.5">
+        <div class="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse"></div>
+        <div>
+          <h4 id="chat-header" class="font-bold text-sm leading-tight">CareFirst AI Assistant</h4>
+          <span id="chat-sub" class="text-[11px] text-blue-100">Live Voice & Text • Bilingual</span>
+        </div>
+      </div>
+      <button onclick="toggleChat()" class="text-blue-100 hover:text-white text-xl font-bold">&times;</button>
+    </div>
+
+    <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50/60 text-sm">
+      <div id="chat-welcome" class="bg-white p-3.5 rounded-2xl rounded-tl-none border border-slate-100 shadow-sm text-slate-700 max-w-[85%] leading-relaxed">
+        Hello! I am your CareFirst hospital AI assistant. You can type or tap the microphone to ask questions or book an appointment.
+      </div>
+    </div>
+
+    <div class="p-3 bg-white border-t border-slate-100 flex items-center gap-2">
+      <button id="voice-btn" onclick="startVoiceRecognition()" title="Voice Input" class="p-2.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition">
+        <i data-lucide="mic" class="w-5 h-5"></i>
+      </button>
+      <input id="chat-input" type="text" placeholder="Type or speak..." class="flex-1 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-blue-600" onkeydown="if(event.key === 'Enter') sendMessage()" />
+      <button onclick="sendMessage()" id="btn-send" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition">
+        Send
+      </button>
+    </div>
+  </div>
+
+  <!-- Floating Chat Toggle Button -->
+  <button onclick="toggleChat()" class="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-500 text-white p-4 rounded-2xl shadow-xl shadow-blue-600/30 transition transform hover:scale-105 z-50 flex items-center justify-center">
+    <i data-lucide="message-square" class="w-6 h-6"></i>
+  </button>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-100 mt-16 py-10">
+    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8 text-sm">
+      <div class="space-y-2">
+        <div class="flex items-center gap-2 font-bold text-slate-900">
+          <i data-lucide="map-pin" class="w-4 h-4 text-blue-600"></i> CareFirst Multispeciality Hospital
+        </div>
+        <p class="text-xs text-slate-500">MG Road, Kochi, Kerala, India - 682016</p>
+      </div>
+      <div class="space-y-2">
+        <div class="flex items-center gap-2 font-bold text-slate-900">
+          <i data-lucide="phone" class="w-4 h-4 text-blue-600"></i> +91 484 2900000
+        </div>
+        <p class="text-xs text-slate-500">24/7 Clinical & Emergency Helpline</p>
+      </div>
+      <div class="space-y-2">
+        <div class="flex items-center gap-2 font-bold text-slate-900">
+          <i data-lucide="mail" class="w-4 h-4 text-blue-600"></i> info@carefirsthosp.com
+        </div>
+        <p class="text-xs text-slate-500">Online OPD inquiries & support</p>
+      </div>
+      <div class="space-y-2">
+        <div class="flex items-center gap-2 font-bold text-slate-900">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i> Your Health, Our Priority
+        </div>
+        <p class="text-xs text-slate-500">Trusted Care. Always.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    // Color gradient badges for cards without external images
+    const badgeColors = [
+      { bg: "bg-blue-50 text-blue-600 border-blue-200", icon: "heart-pulse" },
+      { bg: "bg-indigo-50 text-indigo-600 border-indigo-200", icon: "brain" },
+      { bg: "bg-cyan-50 text-cyan-600 border-cyan-200", icon: "bone" },
+      { bg: "bg-emerald-50 text-emerald-600 border-emerald-200", icon: "sparkles" },
+      { bg: "bg-amber-50 text-amber-600 border-amber-200", icon: "baby" }
+    ];
+
+    let currentLang = 'en';
+    const dict = {
+      en: {
+        navTitle: "CareFirst Multispeciality", navDoctors: "Doctors", navAdmin: "Admin Queue",
+        heroTag: "AI HOSPITAL ASSISTANT PLATFORM", heroTitle: "Smart Clinical Care with Instant AI Assistance", heroDesc: "Check real-time OPD schedules, book appointments via voice, text, or interactive booking form, and get immediate clinical triage.",
+        btnChat: "Open AI Assistant", btnBook: "Book Appointment", casualtyTitle: "24/7 Casualty & Triage", casualtyDesc: "For critical care & ambulance dispatch", casualtyLabel: "Emergency Helpline",
+        dirTitle: "Specialist Doctors Directory", adminTitle: "Live Admin Appointments Queue", btnRefresh: "Refresh List",
+        thId: "Booking ID", thName: "Patient Name", thPhone: "Phone", thDate: "Date & Time", thStatus: "Status",
+        chatHeader: "CareFirst AI Assistant", chatSub: "Live Voice & Text • Bilingual", chatWelcome: "Hello! I am your CareFirst hospital AI assistant. You can type or tap the microphone to ask questions or book an appointment.", chatPlaceholder: "Type or speak...", btnSend: "Send",
+        docOp: "OP Days", docFee: "Fee", docBook: "Book Appointment"
+      },
+      ml: {
+        navTitle: "കെയർഫസ്റ്റ് ഹോസ്പിറ്റൽ", navDoctors: "ഡോക്ടർമാർ", navAdmin: "അഡ്മിൻ ക്യൂ",
+        heroTag: "AI ഹോസ്പിറ്റൽ അസിസ്റ്റന്റ്", heroTitle: "മികച്ച ചികിത്സയും തൽക്ഷണ AI സേവനവും", heroDesc: "നിങ്ങൾക്ക് ഡോക്ടർമാരുടെ സമയം പരിശോധിക്കാനും അപ്പോയിന്റ്മെന്റ് ബുക്ക് ചെയ്യാനും കഴിയും.",
+        btnChat: "AI അസിസ്റ്റന്റ് തുറക്കുക", btnBook: "ബുക്കിംഗ് ചെയ്യുക", casualtyTitle: "24/7 അത്യാഹിത വിഭാഗം", casualtyDesc: "ആംബുലൻസിനും അടിയന്തര ചികിത്സയ്ക്കും വിളിക്കുക", casualtyLabel: "ഹെൽപ്പ് ലൈൻ നമ്പർ",
+        dirTitle: "സ്പെഷ്യലിസ്റ്റ് ഡോക്ടർമാർ", adminTitle: "അഡ്മിൻ അപ്പോയിന്റ്മെന്റ് ക്യൂ", btnRefresh: "പുതുക്കുക",
+        thId: "ബുക്കിംഗ് ഐഡി", thName: "രോഗിയുടെ പേര്", thPhone: "ഫോൺ", thDate: "തിയ്യതി & സമയം", thStatus: "സ്റ്റാറ്റസ്",
+        chatHeader: "കെയർഫസ്റ്റ് AI", chatSub: "വോയിസ് & ടെക്സ്റ്റ് സപ്പോർട്ട്", chatWelcome: "നമസ്കാരം! നിങ്ങൾക്ക് ഡോക്ടർമാരുടെ സമയവും ഫീസും ചോദിക്കാം.", chatPlaceholder: "ഇവിടെ ടൈപ്പ് ചെയ്യുക...", btnSend: "അയക്കുക",
+        docOp: "ദിവസങ്ങൾ", docFee: "ഫീസ്", docBook: "ബുക്ക് ചെയ്യുക"
+      }
+    };
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'en' ? 'ml' : 'en';
+      document.getElementById('lang-label').innerText = currentLang === 'en' ? 'ENG' : 'മലയാളം';
+      
+      document.getElementById('nav-title').innerText = dict[currentLang].navTitle;
+      document.getElementById('nav-doctors').innerText = dict[currentLang].navDoctors;
+      document.getElementById('nav-admin').innerText = dict[currentLang].navAdmin;
+      document.getElementById('hero-tag').innerText = dict[currentLang].heroTag;
+      document.getElementById('hero-title').innerHTML = currentLang === 'en' 
+        ? 'Smart Clinical Care with Instant <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">AI Assistance</span>'
+        : 'മികച്ച ചികിത്സയും തൽക്ഷണ <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">AI സേവനവും</span>';
+      document.getElementById('hero-desc').innerText = dict[currentLang].heroDesc;
+      document.getElementById('btn-chat').innerText = dict[currentLang].btnChat;
+      document.getElementById('btn-book').innerText = dict[currentLang].btnBook;
+      document.getElementById('casualty-title').innerText = dict[currentLang].casualtyTitle;
+      document.getElementById('casualty-desc').innerText = dict[currentLang].casualtyDesc;
+      document.getElementById('casualty-label').innerText = dict[currentLang].casualtyLabel;
+      document.getElementById('dir-title').innerHTML = `<i data-lucide="stethoscope" class="w-6 h-6 text-blue-600 inline-block mr-1"></i> ${dict[currentLang].dirTitle}`;
+      document.getElementById('admin-title').innerHTML = `<i data-lucide="calendar-days" class="w-5 h-5 text-indigo-600 inline-block mr-1"></i> ${dict[currentLang].adminTitle}`;
+      document.getElementById('btn-refresh').innerText = dict[currentLang].btnRefresh;
+      
+      document.getElementById('th-id').innerText = dict[currentLang].thId;
+      document.getElementById('th-name').innerText = dict[currentLang].thName;
+      document.getElementById('th-phone').innerText = dict[currentLang].thPhone;
+      document.getElementById('th-date').innerText = dict[currentLang].thDate;
+      document.getElementById('th-status').innerText = dict[currentLang].thStatus;
+      
+      document.getElementById('chat-header').innerText = dict[currentLang].chatHeader;
+      document.getElementById('chat-sub').innerText = dict[currentLang].chatSub;
+      document.getElementById('chat-welcome').innerText = dict[currentLang].chatWelcome;
+      document.getElementById('chat-input').placeholder = dict[currentLang].chatPlaceholder;
+      document.getElementById('btn-send').innerText = dict[currentLang].btnSend;
+      
+      lucide.createIcons();
+      loadDoctors();
+    }
+
+    function toggleChat() {
+      document.getElementById('chat-modal').classList.toggle('hidden');
+    }
+
+    // Generate Initials
+    function getInitials(name) {
+      const parts = name.replace('Dr.', '').trim().split(' ');
+      if (parts.length >= 2) return parts[0][0] + parts[1][0];
+      return parts[0].substring(0, 2).toUpperCase();
+    }
+
+    async function loadDoctors() {
+      const list = document.getElementById('doctor-list');
+      try {
+        const res = await fetch('http://127.0.0.1:8000/api/v1/doctors');
+        const data = await res.json();
+        list.innerHTML = data.map((doc, idx) => {
+          const theme = badgeColors[idx % badgeColors.length];
+          const initials = getInitials(doc.name);
+
+          return `
+            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-xl transition group">
+              <div class="p-6 flex flex-col items-center text-center">
+                <!-- Clean Medical Initials Avatar -->
+                <div class="w-20 h-20 rounded-2xl ${theme.bg} border flex items-center justify-center font-bold text-2xl mb-4 group-hover:scale-105 transition shadow-sm">
+                  ${initials}
+                </div>
+                
+                <h3 class="font-bold text-slate-900 text-base leading-snug">${doc.name}</h3>
+                <p class="text-xs text-blue-600 font-semibold mt-1">${doc.qualification}</p>
+                
+                <div class="w-full bg-slate-50 rounded-2xl p-3 mt-4 text-[11px] text-slate-600 space-y-1.5 text-left border border-slate-100">
+                  <div class="flex justify-between">
+                    <span class="text-slate-400 font-medium">${dict[currentLang].docOp}:</span>
+                    <span class="font-semibold text-slate-700">${doc.available_days}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-slate-400 font-medium">Timing:</span>
+                    <span class="font-semibold text-slate-700">${doc.op_timings}</span>
+                  </div>
+                  <div class="flex justify-between border-t border-slate-200/60 pt-1.5">
+                    <span class="text-slate-400 font-medium">${dict[currentLang].docFee}:</span>
+                    <span class="font-bold text-slate-900 text-xs">₹${doc.consultation_fee}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-5 pt-0">
+                <button onclick="openBookingModal(${doc.id}, '${doc.name}')" class="w-full bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white font-semibold py-2.5 rounded-xl text-xs transition border border-blue-100 flex items-center justify-center gap-1.5 shadow-sm">
+                  <i data-lucide="calendar-plus" class="w-3.5 h-3.5"></i> ${dict[currentLang].docBook}
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+        lucide.createIcons();
+      } catch (err) {
+        list.innerHTML = `<p class="text-red-500 text-sm col-span-full">Failed to load doctor directory from backend.</p>`;
+      }
+    }
+
+    function openBookingModal(doctorId, doctorName) {
+      document.getElementById('form-doctor-id').value = doctorId;
+      document.getElementById('form-doctor-name').value = doctorName;
+      document.getElementById('form-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('booking-modal').classList.remove('hidden');
+    }
+
+    function closeBookingModal() {
+      document.getElementById('booking-modal').classList.add('hidden');
+    }
+
+    async function handleFormBooking(event) {
+      event.preventDefault();
+      const payload = {
+        doctor_id: parseInt(document.getElementById('form-doctor-id').value),
+        patient_name: document.getElementById('form-patient-name').value.trim(),
+        patient_phone: document.getElementById('form-patient-phone').value.trim(),
+        appointment_date: document.getElementById('form-date').value,
+        appointment_time: document.getElementById('form-time').value
+      };
+
+      try {
+        const res = await fetch('http://127.0.0.1:8000/api/v1/appointments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        closeBookingModal();
+        loadAppointments();
+        
+        if (document.getElementById('chat-modal').classList.contains('hidden')) toggleChat();
+        const messages = document.getElementById('chat-messages');
+        messages.innerHTML += `
+          <div class="bg-emerald-50 text-emerald-900 p-3.5 rounded-2xl border border-emerald-200 text-xs leading-relaxed">
+            ✅ <strong>Appointment Confirmed!</strong><br>
+            • Booking ID: #APT-${data.id}<br>
+            • Patient: ${data.patient_name}<br>
+            • Schedule: ${data.appointment_date} at ${data.appointment_time}
+          </div>
+        `;
+        messages.scrollTop = messages.scrollHeight;
+      } catch (err) {
+        alert("Failed to create appointment.");
+      }
+    }
+
+    async function loadAppointments() {
+      const tbody = document.getElementById('appointment-table-body');
+      try {
+        const res = await fetch('http://127.0.0.1:8000/api/v1/appointments');
+        const data = await res.json();
+        if (data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400">No appointments recorded yet.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = data.map(apt => `
+          <tr class="hover:bg-slate-50/80 transition">
+            <td class="py-3.5 px-4 font-mono text-xs text-slate-500 font-semibold">#APT-${apt.id}</td>
+            <td class="py-3.5 px-4 font-bold text-slate-900">${apt.patient_name}</td>
+            <td class="py-3.5 px-4 text-slate-600 font-medium">${apt.patient_phone}</td>
+            <td class="py-3.5 px-4 text-slate-600">${apt.appointment_date} at ${apt.appointment_time}</td>
+            <td class="py-3.5 px-4">
+              <span class="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold border border-emerald-200 inline-block">
+                ${apt.status}
+              </span>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-red-500 py-6 text-center text-xs">Error loading appointments table.</td></tr>`;
+      }
+    }
+
+    function startVoiceRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) return alert("Voice not supported on this browser. Use Chrome or Edge.");
+      
+      const recognition = new SpeechRecognition();
+      recognition.lang = currentLang === 'ml' ? 'ml-IN' : 'en-IN'; 
+      const micBtn = document.getElementById('voice-btn');
+
+      recognition.onstart = () => micBtn.classList.add('text-red-600', 'animate-pulse');
+      recognition.onresult = (e) => {
+        document.getElementById('chat-input').value = e.results[0][0].transcript;
+        sendMessage();
+      };
+      recognition.onend = () => micBtn.classList.remove('text-red-600', 'animate-pulse');
+      recognition.start();
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const messages = document.getElementById('chat-messages');
+      const query = input.value.trim();
+      if (!query) return;
+
+      messages.innerHTML += `
+        <div class="flex justify-end">
+          <div class="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-none text-sm max-w-[85%] shadow-sm">
+            ${query}
+          </div>
+        </div>
+      `;
+      input.value = '';
+      messages.scrollTop = messages.scrollHeight;
+
+      try {
+        const res = await fetch('http://127.0.0.1:8000/api/v1/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: query, language: currentLang })
+        });
+        const data = await res.json();
+        
+        messages.innerHTML += `
+          <div class="bg-white p-3.5 rounded-2xl rounded-tl-none border border-slate-100 shadow-sm text-slate-700 max-w-[85%] leading-relaxed">
+            ${data.response.replace(/\n/g, '<br>')}
+          </div>
+        `;
+        if (data.intent === 'book_appointment') loadAppointments();
+      } catch (err) {
+        messages.innerHTML += `<div class="bg-red-50 text-red-600 p-3 rounded-2xl border border-red-200 text-xs">Error connecting to server.</div>`;
+      }
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    loadDoctors();
+    loadAppointments();
+  </script>
+</body>
+</html>
