@@ -132,7 +132,11 @@
       </div>
 
       <div id="doctor-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-        <div class="bg-white p-6 rounded-2xl border text-center text-slate-400 col-span-full">Loading doctors directory...</div>
+        <div class="bg-white p-8 rounded-2xl border border-slate-100 text-center col-span-full shadow-sm">
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent mb-3"></div>
+          <p class="text-slate-600 font-medium">Connecting to hospital backend...</p>
+          <p class="text-xs text-slate-400 mt-1">Free cloud tier may take up to 30s to initialize on first visit.</p>
+        </div>
       </div>
     </section>
 
@@ -282,16 +286,23 @@
   <script>
     lucide.createIcons();
 
-    // LIVE RENDER PRODUCTION BACKEND BASE URL
     const API_BASE_URL = "https://ai-hospital-assistant-vif4.onrender.com";
 
     const badgeColors = [
-      { bg: "bg-blue-50 text-blue-600 border-blue-200", icon: "heart-pulse" },
-      { bg: "bg-indigo-50 text-indigo-600 border-indigo-200", icon: "brain" },
-      { bg: "bg-cyan-50 text-cyan-600 border-cyan-200", icon: "bone" },
-      { bg: "bg-emerald-50 text-emerald-600 border-emerald-200", icon: "sparkles" },
-      { bg: "bg-amber-50 text-amber-600 border-amber-200", icon: "baby" }
+      { bg: "bg-blue-50 text-blue-600 border-blue-200" },
+      { bg: "bg-indigo-50 text-indigo-600 border-indigo-200" },
+      { bg: "bg-cyan-50 text-cyan-600 border-cyan-200" },
+      { bg: "bg-emerald-50 text-emerald-600 border-emerald-200" },
+      { bg: "bg-amber-50 text-amber-600 border-amber-200" }
     ];
+
+    const departmentMap = {
+      1: "Cardiology",
+      2: "Neurology",
+      3: "Orthopedics",
+      4: "Dermatology",
+      5: "Pediatrics"
+    };
 
     let currentLang = 'en';
     const dict = {
@@ -357,19 +368,37 @@
     }
 
     function getInitials(name) {
+      if (!name) return "DR";
       const parts = name.replace('Dr.', '').trim().split(' ');
-      if (parts.length >= 2) return parts[0][0] + parts[1][0];
+      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
       return parts[0].substring(0, 2).toUpperCase();
     }
 
-    async function loadDoctors() {
+    // Auto-retrying, robust doctor loader
+    async function loadDoctors(retries = 5, delay = 5000) {
       const list = document.getElementById('doctor-list');
       try {
         const res = await fetch(`${API_BASE_URL}/api/v1/doctors`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        
         const data = await res.json();
+        
+        if (!Array.isArray(data) || data.length === 0) {
+          if (retries > 0) {
+            setTimeout(() => loadDoctors(retries - 1, delay), delay);
+          } else {
+            list.innerHTML = `<p class="text-amber-600 text-sm col-span-full text-center py-6">Database initializing. Please refresh in a few seconds.</p>`;
+          }
+          return;
+        }
+
         list.innerHTML = data.map((doc, idx) => {
           const theme = badgeColors[idx % badgeColors.length];
-          const initials = getInitials(doc.name);
+          const initials = doc.initials || getInitials(doc.name);
+          const fee = doc.fee !== undefined ? doc.fee : (doc.consultation_fee || 500);
+          const days = doc.op_days || doc.available_days || "Mon - Sat";
+          const timing = doc.op_timing || doc.op_timings || "09:00 AM - 01:00 PM";
+          const dept = doc.department || departmentMap[doc.department_id] || "Specialist";
 
           return `
             <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-xl transition group">
@@ -379,20 +408,20 @@
                 </div>
                 
                 <h3 class="font-bold text-slate-900 text-base leading-snug">${doc.name}</h3>
-                <p class="text-xs text-blue-600 font-semibold mt-1">${doc.qualification}</p>
+                <p class="text-xs text-blue-600 font-semibold mt-1">${doc.qualification || dept}</p>
                 
                 <div class="w-full bg-slate-50 rounded-2xl p-3 mt-4 text-[11px] text-slate-600 space-y-1.5 text-left border border-slate-100">
                   <div class="flex justify-between">
                     <span class="text-slate-400 font-medium">${dict[currentLang].docOp}:</span>
-                    <span class="font-semibold text-slate-700">${doc.available_days}</span>
+                    <span class="font-semibold text-slate-700">${days}</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="text-slate-400 font-medium">Timing:</span>
-                    <span class="font-semibold text-slate-700">${doc.op_timings}</span>
+                    <span class="font-semibold text-slate-700">${timing}</span>
                   </div>
                   <div class="flex justify-between border-t border-slate-200/60 pt-1.5">
                     <span class="text-slate-400 font-medium">${dict[currentLang].docFee}:</span>
-                    <span class="font-bold text-slate-900 text-xs">₹${doc.consultation_fee}</span>
+                    <span class="font-bold text-slate-900 text-xs">₹${fee}</span>
                   </div>
                 </div>
               </div>
@@ -407,7 +436,15 @@
         }).join('');
         lucide.createIcons();
       } catch (err) {
-        list.innerHTML = `<p class="text-red-500 text-sm col-span-full">Failed to load doctor directory from backend.</p>`;
+        console.warn("Retrying backend connection...", err);
+        if (retries > 0) {
+          setTimeout(() => loadDoctors(retries - 1, delay), delay);
+        } else {
+          list.innerHTML = `<div class="p-6 text-center col-span-full text-slate-500 text-sm">
+            <p class="text-red-500 font-medium">Server is starting up.</p>
+            <p class="text-xs mt-1">Please refresh the page in a few moments.</p>
+          </div>`;
+        }
       }
     }
 
@@ -427,9 +464,13 @@
       const payload = {
         doctor_id: parseInt(document.getElementById('form-doctor-id').value),
         patient_name: document.getElementById('form-patient-name').value.trim(),
+        phone: document.getElementById('form-patient-phone').value.trim(),
         patient_phone: document.getElementById('form-patient-phone').value.trim(),
+        preferred_date: document.getElementById('form-date').value,
         appointment_date: document.getElementById('form-date').value,
-        appointment_time: document.getElementById('form-time').value
+        preferred_time: document.getElementById('form-time').value,
+        appointment_time: document.getElementById('form-time').value,
+        department: "General OPD"
       };
 
       try {
@@ -444,12 +485,13 @@
         
         if (document.getElementById('chat-modal').classList.contains('hidden')) toggleChat();
         const messages = document.getElementById('chat-messages');
+        const bookingId = data.booking_id || `#APT-${data.id}`;
         messages.innerHTML += `
           <div class="bg-emerald-50 text-emerald-900 p-3.5 rounded-2xl border border-emerald-200 text-xs leading-relaxed">
             ✅ <strong>Appointment Confirmed!</strong><br>
-            • Booking ID: #APT-${data.id}<br>
+            • Booking ID: ${bookingId}<br>
             • Patient: ${data.patient_name}<br>
-            • Schedule: ${data.appointment_date} at ${data.appointment_time}
+            • Schedule: ${payload.appointment_date} at ${payload.appointment_time}
           </div>
         `;
         messages.scrollTop = messages.scrollHeight;
@@ -463,25 +505,32 @@
       try {
         const res = await fetch(`${API_BASE_URL}/api/v1/appointments`);
         const data = await res.json();
-        if (data.length === 0) {
+        if (!Array.isArray(data) || data.length === 0) {
           tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400">No appointments recorded yet.</td></tr>`;
           return;
         }
-        tbody.innerHTML = data.map(apt => `
-          <tr class="hover:bg-slate-50/80 transition">
-            <td class="py-3.5 px-4 font-mono text-xs text-slate-500 font-semibold">#APT-${apt.id}</td>
-            <td class="py-3.5 px-4 font-bold text-slate-900">${apt.patient_name}</td>
-            <td class="py-3.5 px-4 text-slate-600 font-medium">${apt.patient_phone}</td>
-            <td class="py-3.5 px-4 text-slate-600">${apt.appointment_date} at ${apt.appointment_time}</td>
-            <td class="py-3.5 px-4">
-              <span class="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold border border-emerald-200 inline-block">
-                ${apt.status}
-              </span>
-            </td>
-          </tr>
-        `).join('');
+        tbody.innerHTML = data.map(apt => {
+          const bookingId = apt.booking_id || `#APT-${apt.id}`;
+          const phone = apt.phone || apt.patient_phone || "N/A";
+          const dateStr = apt.preferred_date || apt.appointment_date || "Today";
+          const timeStr = apt.preferred_time || apt.appointment_time || "General OPD";
+
+          return `
+            <tr class="hover:bg-slate-50/80 transition">
+              <td class="py-3.5 px-4 font-mono text-xs text-slate-500 font-semibold">${bookingId}</td>
+              <td class="py-3.5 px-4 font-bold text-slate-900">${apt.patient_name}</td>
+              <td class="py-3.5 px-4 text-slate-600 font-medium">${phone}</td>
+              <td class="py-3.5 px-4 text-slate-600">${dateStr} at ${timeStr}</td>
+              <td class="py-3.5 px-4">
+                <span class="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold border border-emerald-200 inline-block">
+                  ${apt.status || "Confirmed"}
+                </span>
+              </td>
+            </tr>
+          `;
+        }).join('');
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-red-500 py-6 text-center text-xs">Error loading appointments table.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="text-slate-400 py-6 text-center text-xs">Waiting for server...</td></tr>`;
       }
     }
 
@@ -525,10 +574,11 @@
           body: JSON.stringify({ message: query, language: currentLang })
         });
         const data = await res.json();
+        const replyText = data.reply || data.response || "No response received.";
         
         messages.innerHTML += `
           <div class="bg-white p-3.5 rounded-2xl rounded-tl-none border border-slate-100 shadow-sm text-slate-700 max-w-[85%] leading-relaxed">
-            ${data.response.replace(/\n/g, '<br>')}
+            ${replyText.replace(/\n/g, '<br>')}
           </div>
         `;
         if (data.intent === 'book_appointment') loadAppointments();
