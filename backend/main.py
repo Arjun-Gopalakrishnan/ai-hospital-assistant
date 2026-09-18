@@ -271,7 +271,6 @@ def create_appointment(appointment: AppointmentCreate, db: Session = Depends(get
     app_date = appointment.appointment_date or appointment.preferred_date or "2026-04-15"
     app_time = appointment.appointment_time or appointment.preferred_time or "09:30 AM"
 
-    # Inspect the models.Appointment columns dynamically to avoid mismatch crashes
     new_apt_data = {
         "patient_name": appointment.patient_name,
     }
@@ -325,17 +324,17 @@ def hospital_ai_triage(chat: ChatMessage, db: Session = Depends(get_db)):
     emergency_keywords = [
         "emergency", "chest pain", "heart attack", "accident", "bleeding",
         "breathless", "ambulance", "oxygen", "stroke", "unconscious",
-        "നെഞ്ചുവേദന", "അപകടം", "ശ്വാസമെടുക്കാൻ"
+        "??????????", "?????", "??????????????"
     ]
     if any(re.search(rf"\b{re.escape(k)}\b", user_msg) for k in emergency_keywords):
         return {
             "type": "emergency",
             "reply": (
-                "🚨 **EMERGENCY DETECTED**: Please reach our 24/7 Emergency Casualty immediately. "
+                "?? **EMERGENCY DETECTED**: Please reach our 24/7 Emergency Casualty immediately. "
                 "Contact our emergency hotline: **+91 484 2900000** or call for an ambulance."
             ),
             "response": (
-                "🚨 **EMERGENCY DETECTED**: Please reach our 24/7 Emergency Casualty immediately. "
+                "?? **EMERGENCY DETECTED**: Please reach our 24/7 Emergency Casualty immediately. "
                 "Contact our emergency hotline: **+91 484 2900000** or call for an ambulance."
             )
         }
@@ -348,46 +347,46 @@ def hospital_ai_triage(chat: ChatMessage, db: Session = Depends(get_db)):
 
     formatted_docs = [format_doctor(d) for d in doctors]
 
-    if any(k in user_msg for k in ["cardio", "heart", "jyothilakshmi", "ഹൃദയം"]):
+    if any(k in user_msg for k in ["cardio", "heart", "jyothilakshmi", "?????"]):
         doc = next((d for d in formatted_docs if d["department_id"] == 1), None)
         if doc:
-            txt = f"❤️ **{doc['name']}** ({doc['qualification']}) specializes in {doc['department']}.\n\n📅 OP Days: {doc['op_days']}\n⏰ Timings: {doc['op_timings']}\n💵 Consultation Fee: ₹{doc['fee']}"
+            txt = f"?? **{doc['name']}** ({doc['qualification']}) specializes in {doc['department']}.\n\n?? OP Days: {doc['op_days']}\n? Timings: {doc['op_timings']}\n?? Consultation Fee: ?{doc['fee']}"
             return {"type": "info", "reply": txt, "response": txt}
 
-    if any(k in user_msg for k in ["neuro", "brain", "spine", "sreelakshmi", "തലവേദന"]):
+    if any(k in user_msg for k in ["neuro", "brain", "spine", "sreelakshmi", "??????"]):
         doc = next((d for d in formatted_docs if d["department_id"] == 2), None)
         if doc:
-            txt = f"🧠 **{doc['name']}** ({doc['qualification']}) specializes in {doc['department']}.\n\n📅 OP Days: {doc['op_days']}\n⏰ Timings: {doc['op_timings']}\n💵 Consultation Fee: ₹{doc['fee']}"
+            txt = f"?? **{doc['name']}** ({doc['qualification']}) specializes in {doc['department']}.\n\n?? OP Days: {doc['op_days']}\n? Timings: {doc['op_timings']}\n?? Consultation Fee: ?{doc['fee']}"
             return {"type": "info", "reply": txt, "response": txt}
 
-    if any(k in user_msg for k in ["ortho", "bone", "joint", "mahalakshmi", "അസ്ഥി"]):
+    if any(k in user_msg for k in ["ortho", "bone", "joint", "mahalakshmi", "?????"]):
         doc = next((d for d in formatted_docs if d["department_id"] == 3), None)
         if doc:
-            txt = f"🦴 **{doc['name']}** ({doc['qualification']}) specializes in {doc['department']}.\n\n📅 OP Days: {doc['op_days']}\n⏰ Timings: {doc['op_timings']}\n💵 Consultation Fee: ₹{doc['fee']}"
+            txt = f"?? **{doc['name']}** ({doc['qualification']}) specializes in {doc['department']}.\n\n?? OP Days: {doc['op_days']}\n? Timings: {doc['op_timings']}\n?? Consultation Fee: ?{doc['fee']}"
             return {"type": "info", "reply": txt, "response": txt}
 
-    if any(k in user_msg for k in ["derma", "skin", "hair", "anamika", "ചർമ്മ"]):
+    if any(k in user_msg for k in ["derma", "skin", "hair", "anamika", "?????"]):
         doc = next((d for d in formatted_docs if d["department_id"] == 4), None)
         if doc:
-            txt = f"✨ **{doc['name']}** ({doc['qualification']}) specializes in {doc['department']}.\n\n📅 OP Days: {doc['op_days']}\n⏰ Timings: {doc['op_timings']}\n💵 Consultation Fee: ₹{doc['fee']}"
+            txt = f"? **{doc['name']}** ({doc['qualification']}) specializes in {doc['department']}.\n\n?? OP Days: {doc['op_days']}\n? Timings: {doc['op_timings']}\n?? Consultation Fee: ?{doc['fee']}"
             return {"type": "info", "reply": txt, "response": txt}
 
-    if any(k in user_msg for k in ["pediatric", "child", "baby", "ananya", "കുട്ടികൾ"]):
+    if any(k in user_msg for k in ["pediatric", "child", "baby", "ananya", "????????"]):
         doc = next((d for d in formatted_docs if d["department_id"] == 5), None)
         if doc:
-            txt = f"👶 **{doc['name']}** ({doc['qualification']}) specializes in {doc['department']}.\n\n📅 OP Days: {doc['op_days']}\n⏰ Timings: {doc['op_timings']}\n💵 Consultation Fee: ₹{doc['fee']}"
+            txt = f"?? **{doc['name']}** ({doc['qualification']}) specializes in {doc['department']}.\n\n?? OP Days: {doc['op_days']}\n? Timings: {doc['op_timings']}\n?? Consultation Fee: ?{doc['fee']}"
             return {"type": "info", "reply": txt, "response": txt}
 
-    if any(k in user_msg for k in ["doctor", "doctors", "fee", "cost", "list", "ഡോക്ടർ"]):
-        summary = "\n".join([f"• **{d['name']}** ({d['department']}) — ₹{d['fee']} | {d['op_days']}" for d in formatted_docs])
+    if any(k in user_msg for k in ["doctor", "doctors", "fee", "cost", "list", "??????"]):
+        summary = "\n".join([f"� **{d['name']}** ({d['department']}) � ?{d['fee']} | {d['op_days']}" for d in formatted_docs])
         txt = f"Here is our active specialist directory:\n\n{summary}\n\nYou can book an appointment directly using the booking form below!"
         return {"type": "info", "reply": txt, "response": txt}
 
     txt = (
         "Hello! I am your CareFirst Hospital Assistant. I can help you with:\n"
-        "• Doctor schedules & OPD timings (Cardiology, Neurology, Ortho, etc.)\n"
-        "• Consultation fees & department information\n"
-        "• Emergency casualty support\n\n"
+        "� Doctor schedules & OPD timings (Cardiology, Neurology, Ortho, etc.)\n"
+        "� Consultation fees & department information\n"
+        "� Emergency casualty support\n\n"
         "How can I assist you today?"
     )
     return {"type": "general", "reply": txt, "response": txt}
